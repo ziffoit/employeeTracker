@@ -88,7 +88,72 @@ const viewEmployees = () => {
       choice()
     }
     )
-}   
+}
+
+const addDepartment = () => {
+    inquirer
+        .prompt([
+            {
+            name: 'name',
+            type: 'input',
+            message: 'What is the name of the department you would like to add?',
+            },
+        ])
+        .then(({name}) => {
+            connection.query(
+              'INSERT INTO department SET ?',
+              {
+                name: name,
+              },
+              (err) => {
+                if (err) throw err;
+                console.log(`You successfully added ${name}!`);
+                start();
+              }
+            );
+          });
+}      
+const addRole = () => {
+    const departmentList = []
+    inquirer
+        .prompt([
+            {
+            name: 'title',
+            type: 'input',
+            message: 'What is the title of the new role you would like to add?',
+            },
+            {
+            name: 'salary',
+            type: 'input',
+            message: 'What salary should this role have?',
+            validate(salary) {
+                return !isNaN(salary)
+              },    
+            },
+            {
+            name: 'department',
+            type: 'list',
+            message: 'What department should the role be under?',
+            choices: departmentList    
+        },
+        ])
+        .then(({title, salary, department}) => {
+
+            connection.query(
+              'INSERT INTO role SET ?',
+              {
+                title: title,
+                salary: salary,
+
+              },
+              (err) => {
+                if (err) throw err;
+                console.log(`You successfully added ${name}!`);
+                start();
+              }
+            );
+          });
+}
 
   connection.connect((err) => {
     if (err) throw err;
