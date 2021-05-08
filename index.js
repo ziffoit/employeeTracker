@@ -65,6 +65,31 @@ const choice = () => {
       });
 };  
 
+const viewDepartments = () => {
+    connection.query('SELECT * FROM department', (err, results) => {
+      if (err) throw err;
+      console.log(results)
+      choice()
+    }
+    )
+}
+const viewRoles = () => {
+    connection.query('SELECT * FROM role', (err, results) => {
+      if (err) throw err;
+      console.log(results)
+      choice()
+    }
+    )
+}
+const viewEmployees = () => {
+    connection.query('SELECT * FROM employee', (err, results) => {
+      if (err) throw err;
+      console.log(results)
+      choice()
+    }
+    )
+}   
+
   connection.connect((err) => {
     if (err) throw err;
     choice();
