@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const cTable = require('console.table')
 
 // create the connection information for the sql database
 const connection = mysql.createConnection({
@@ -65,21 +66,21 @@ const choice = () => {
 };
 
 const viewDepartments = () => {
-    connection.query("SELECT * FROM department", (err, results) => {
+    connection.query("SELECT name FROM department", (err, results) => {
         if (err) throw err;
         console.table(results);
         choice();
     });
 };
 const viewRoles = () => {
-    connection.query("SELECT * FROM role", (err, results) => {
+    connection.query("SELECT name AS department_name, title, salary FROM role INNER JOIN department ON department.id = role.department_id", (err, results) => {
         if (err) throw err;
         console.table(results);
         choice();
     });
 };
 const viewEmployees = () => {
-    connection.query("SELECT * FROM employee", (err, results) => {
+    connection.query("SELECT first_name, last_name, title, salary FROM employee INNER JOIN role ON role.id = employee.role_id", (err, results) => {
         if (err) throw err;
         console.table(results);
         choice();
@@ -105,7 +106,7 @@ const addDepartment = () => {
                 (err) => {
                     if (err) throw err;
                     console.log(`You successfully added ${name}!`);
-                    start();
+                    choice();
                 }
             );
         });
@@ -248,5 +249,11 @@ const updateEmployeeRole = () => {
 
 connection.connect((err) => {
     if (err) throw err;
+
+    console.log("\n\n ____  __  __  ____  __    _____  _  _  ____  ____    ____  ____    __    ___  _  _  ____  ____ ")
+    console.log("( ___)(  \\/  )(  _ \\(  )  (  _  )( \\/ )( ___)( ___)  (_  _)(  _ \\  /__\\  / __)( )/ )( ___)(  _ \\ ")
+    console.log(" )__)  )    (  )___/ )(__  )(_)(  \\  /  )__)  )__)     )(   )   / /(__)\\( (__  )  (  )__)  )   / ")
+    console.log("(____)(_/\\/\\_)(__)  (____)(_____) (__) (____)(____)   (__) (_)\\_)(__)(__)\\___)(_)\\_)(____)(_)\\_) \n\n")
+
     choice();
 });
