@@ -204,43 +204,45 @@ const addEmployee = () => {
 };
 
 const updateEmployeeRole = () => {
-    connection.query("SELECT * FROM employee INNER JOIN role ON employee.role_id = role.id", (err, result) => {
+    connection.query("SELECT * FROM employee", (err, employees) => {
         if (err) throw err;
-        console.log(result)
-        const roletitle = result.map(({title}) => { return title })
+        const employeeNames = employees.map(({first_name, last_name}) => { return `${first_name} ${last_name}` })
+        
+        connection.query("SELECT * FROM role", (err, roles) => {
+            if (err) throw err;
+            const employeeRoles = roles.map(({title}) => {return title})
+
         inquirer
             .prompt([
                 {
                     name: "employee",
                     type: "list",
                     message: "What employee would you like to update?",
-                    choices: [] //todo employee list
+                    choices: employeeNames,
                 },
                 
                 {
                     name: "title",
                     type: "list",
                     message: "What new title should the employee have?",
-                    choices: roletitle,
+                    choices: employeeRoles,
                 },
             ])
-            .then(({ first_name, last_name, title }) => {
-                const role_id = result.filter((roleRow) => roleRow.title == title )[0].id
-                connection.query(
-                    "INSERT INTO employee SET ?",
-                    {
-                        first_name: first_name,
-                        last_name: last_name,
-                        role_id: role_id
-                    },
+            .then(({ employee, title }) => {
+                const role_id = roles.filter((roleRow) => roleRow.title == title )[0].id
+                const employee_id = employees
+                .filter(({first_name, last_name}) => `${first_name} ${last_name}` == employee)[0].id;
+                const query = `UPDATE employee SET role_id=${role_id} WHERE id=${employee_id}`
+                connection.query( 
+                    query,
                     (err) => {
                         if (err) throw err;
-                        console.log(`You successfully added ${first_name} ${last_name}!`);
+                        console.log(`You successfully changed ${employee} to ${title}!`);
                         choice();
                     }
                 );
             });
-            
+        });
     });
 }
 
